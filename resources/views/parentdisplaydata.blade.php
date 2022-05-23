@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>parents list</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"/>
+    <link href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- bootstrap edit parent Modal start -->
+<div class="modal fade" id="editparentmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Parents Information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <div class="modal-body">
+            <form id="editparentform">
+              @csrf
+              <div class="form-group">
+                <label for="name">Father Name</label>
+                <input type="text" name="father_name"  class="form-control" id = "name" value="" />
+                <span style = "color : red;">@error('father_name'){{$message}}@enderror</span>
+              </div>
+              <div class="form-group">
+                <label for="email">Mother Name</label>
+                <input type="email" name="mother_name" class="form-control"  id = "email" value="" />
+                <span style = "color : red;">@error('mother_name'){{$message}}@enderror</span>
+              </div>
+              <div class="form-group">
+                <label for="email">Mobile Number</label>
+                <input type="email" name="mobile_number" class="form-control"  id = "email" value="" />
+                <span style = "color : red;">@error('mobile_number'){{$message}}@enderror</span>
+              </div>
+                <input type="hidden" name="url">
+                <input type="hidden" name="parent_id">
+                <button type="button" class="btn btn-success" id="editparentbtn" data-dismiss="modal">Add</button>
+            </form>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <!-- <button type="submit" class="btn btn-primary">Add</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- bootstrap edit parent modal end -->
+
+<!-- bootstrap add parent Modal start -->
+<div class="modal fade" id="addparentdmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Parents Information</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+        <div class="modal-body">
+            <form id="addparentform">
+              @csrf
+              <div class="form-group">
+                <label for="name">Father Name</label>
+                <input type="text" name="father_name"  class="form-control" id = "name" value="" />
+                <span style = "color : red;">@error('father_name'){{$message}}@enderror</span>
+              </div>
+              <div class="form-group">
+                <label for="name">Mother Name</label>
+                <input type="text" name="mother_name"  class="form-control" id = "mother_name" value="" />
+                <span style = "color : red;">@error('mother_name'){{$message}}@enderror</span>
+              </div>
+              <div class="form-group">
+                <label for="mobile_number">Mobile Number</label>
+                <input type="text" name="mobile_number" class="form-control"  id = "mobile_number" value="" />
+                <span style = "color : red;">@error('mobile_number'){{$message}}@enderror</span>
+              </div>
+                <button type="button" class="btn btn-success" id="addparentbtn" data-dismiss="modal">Add</button>
+            </form>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- bootstrap add parent modal end -->
+    
+<div class="container mt-5">
+    <h2 class="mb-4">Parents List</h2>
+        <!-- add parent button start -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addparentdmodal">
+        Add Parent
+    </button>
+    <!-- add parent button end -->
+    <table class="table table-bordered parent-table">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Father_Name</th>
+                <th>Mother_Name</th>
+                <th>Mobile_Number</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+   
+</body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.21/js/dataTables.bootstrap4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.0/sweetalert.min.js"></script>
+
+<script type="text/javascript">
+  $(function () {
+    
+    var table = $('.parent-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "{{ route('parents.list') }}",
+        columns: [
+            {data: 'DT_RowIndex', name: 'DT_RowIndex'},
+            {data: 'father_name', name: 'father_name'},
+            {data: 'mother_name', name: 'mother_name'},
+            {data: 'mobile_number', name: 'mobile_number'},
+            {
+                data: 'action', 
+                name: 'action', 
+                orderable: true, 
+                searchable: true
+            },
+        ]
+    });
+
+  // start code for take old value in form text value
+  $(document).on("click",".editbtn",function(e) {
+    e.preventDefault();
+    $("#editparentmodal input[name=url]").val($(this).attr("href"));
+    $("#editparentmodal input[name=parent_id]").val($(this).attr("data-id"));
+    var url = $(this).attr("data-url");
+               
+    $.ajax({
+      type:"GET",
+      url:url,                
+      success:function(data){
+        $("#editparentmodal input[name=father_name]").val(data.parents.father_name);
+        $("#editparentmodal input[name=mother_name]").val(data.parents.mother_name);
+        $("#editparentmodal input[name=mobile_number]").val(data.parents.mobile_number);
+      },
+      error: function(data) {
+        alert('error');     
+      }
+    });
+                
+    // using parent previous event
+    // $("#editcityrecordmodal input[name=name]").val($(this).parent().prev().prev().text());
+    // $("#editcityrecordmodal input[name=email]").val($(this).parent().prev().text());
+  });
+  // end code for take old value in form text value
+
+  // start code for edit parent record button
+  $(document).on("click","#editparentbtn",function(e) {
+    var url = $("input[name=url]").val();
+    var parent_id = $("input[name=parent_id]").val();
+    var father_name = $("input[name=father_name]").val();
+    var mother_name = $("input[name=mother_name]").val();
+    var mobile_number = $("input[name=mobile_number]").val();
+    $.ajax({
+      type: "POST",
+      url : url,
+      dataType: 'json' ,
+      data:{
+        parent_id:parent_id,
+        father_name:father_name , 
+        mother_name:mother_name,
+        mobile_number:mobile_number,
+        _token: $('meta[name="csrf-token"]').attr('content')
+      },
+      success:function(data){
+        table.draw();
+        $("#editparentform").trigger("reset");
+      },
+      error: function(data) {
+        alert('error');
+      }
+    });
+  });
+  // end code for edit parent record button
+
+  // start code for delete button
+  $(document).on("click",".btn-danger",function(e) {
+    e.preventDefault();
+
+    var form =  $(this).closest("btn-danger");
+    var href = $(this).val();
+            
+    swal({
+      title: `Are you sure you want to delete this record?`,
+      text: "If you delete this, it will be gone forever.",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+    .then((willDelete) => {
+      if (willDelete) {
+        url = $(this).attr('href');
+                        
+        //put ajax call
+        $.ajax({
+          type: "get",
+          url:url,
+          success: function(result) {
+            table.draw();
+          },
+          error: function(result) {
+            alert('error');
+          }
+        });
+      }
+    })
+  });       
+  // end code for delete button
+
+      // start code for add parent record button
+      $(document).on("click","#addparentbtn",function(e) {
+        var url = '{{ route("add.parent") }}';
+        var father_name = $("#addparentform input[name=father_name]").val();
+        var mother_name = $("#addparentform input[name=mother_name]").val();
+        var mobile_number = $("#addparentform input[name=mobile_number]").val();
+        // alert(mobile_number);
+        
+        $.ajax({
+            type: "POST",
+            url : url,
+            dataType: 'json' ,
+            data:{
+              father_name:father_name,
+              mother_name:mother_name, 
+              mobile_number:mobile_number,
+                _token: $('meta[name="csrf-token"]').attr('content')
+            },
+            success:function(data){
+                table.draw();
+                $("#addparentform").trigger("reset");
+            },
+            error: function(data) {
+                alert('error');
+            }
+        });
+    });
+    // end code for add parent record button
+
+  
+    
+  });
+</script>
+</html>
